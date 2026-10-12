@@ -3,6 +3,8 @@
 Türk mobil oyun stüdyolarının oyunlarına gelen App Store yorumlarını açık kaynak bir dil modeliyle
 etiketleyip bulguları **ürün önerilerine** dönüştüren bağımsız bir portföy çalışması.
 
+**[▶ Canlı dashboard](https://ilaydagurocak.github.io/player-feedback-radar/dashboard.html)**
+
 > Bağımsız bir portföy çalışmasıdır; adı geçen şirketlerle herhangi bir bağlantısı yoktur.
 
 ## Öne çıkan bulgular (5.404 yorum, Ekim 2026)
