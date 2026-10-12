@@ -1,0 +1,31 @@
+fact_id,value,label
+n_reviews,5404,Analiz edilen yorum
+store_date,2026-10-12,Mağaza puanlarının çekildiği tarih
+date_max,2026-10-09,Son yorum tarihi
+parse_ok,99.9,Model çıktısı ayrıştırma başarısı (%)
+rm_ml_pct,15.7,Royal Match: reklamla uyuşmazlık şikâyeti (% tüm yorumlar)
+rm_ml_30,19.6,"Royal Match: reklamla uyuşmazlık, son 30 gün (%)"
+others_ml_max,2.9,Diğer 3 oyunda en yüksek reklamla uyuşmazlık payı (%)
+rm_ml_rating,1.62,Royal Match: reklamla uyuşmazlık yorumlarının ort. puanı
+rm_ml_level,360.0,Reklamla uyuşmazlık yorumlarında anılan medyan seviye
+rm_ml_level_n,13,Seviye belirten reklamla uyuşmazlık yorumu sayısı
+rm_diff_level,1050.0,Royal Match: zorluk şikâyetinde medyan seviye
+rm_diff_level_n,31,Royal Match: seviye belirten zorluk yorumu sayısı
+tb_diff_level,300.0,Toon Blast: zorluk şikâyetinde medyan seviye
+tb_diff_level_n,29,Toon Blast: seviye belirten zorluk yorumu sayısı
+tb_veteran,9.1,Toon Blast: olumsuz yorumlarda 'yıllardır oynuyorum' payı (%)
+rm_veteran,2.6,Royal Match: olumsuz yorumlarda 'yıllardır oynuyorum' payı (%)
+tb_diffmon,16.3,Toon Blast: zorluk + monetizasyon birlikte (%)
+rm_diffmon,14.6,Royal Match: zorluk + monetizasyon birlikte (%)
+cbj_timer,27.4,Color Block Jam: olumsuz yorumlarda süre/zamanlayıcı anılma payı (%)
+cbj_timer_churn,21.4,Color Block Jam: süreden şikâyet edenlerde bırakma sinyali (%)
+cbj_notimer_churn,15.4,Color Block Jam: diğerlerinde bırakma sinyali (%)
+cbj_timer_mislabel,55.8,Süre yorumlarının bug/UX diye etiketlenme payı (%)
+cbj_diff_level,286.0,Color Block Jam: zorluk şikâyetinde medyan seviye
+wtg_ads,47.2,Word Tiles GO: reklam şikâyeti (% tüm yorumlar)
+wtg_ads_45,23.5,Word Tiles GO: 4-5 yıldızlı yorumlarda reklam anılma payı (%)
+wtg_mid,30.1,Word Tiles GO: reklam şikâyetlerinde 'oyun ortası' payı (%)
+val_n,80,Doğrulama örneklemi (yorum)
+val_sent,97.5,Duygu doğruluğu (%)
+val_topic,97.5,Ana konu doğruluğu (%)
+val_exact,82.5,Tam kategori seti doğruluğu (%)

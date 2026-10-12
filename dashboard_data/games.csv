@@ -1,0 +1,5 @@
+game,company,store_rating,store_count,avg_rating,gap,reviews,neg_pct,churn_pct,severe_pct
+Royal Match,Dream Games,4.68,4890668,3.01,1.67,2000,58.7,5.9,16.4
+Toon Blast,Peak,4.71,3356419,3.44,1.27,1700,52.6,6.8,14.8
+Word Tiles GO,Gulliver's Games,4.74,22376,3.08,1.66,199,61.3,15.1,19.1
+Color Block Jam,Rollic,4.56,166648,2.25,2.31,1505,83.5,17.0,26.3

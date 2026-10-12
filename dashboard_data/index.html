@@ -1,0 +1,505 @@
+<style>
+.pfr { font-family: var(--font-anthropic-sans); color: var(--color-fg); max-width: 1100px; margin-inline: auto; }
+.pfr-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0 0 var(--cds-gap-xs); }
+.pfr-head p { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); max-width: 60rem; }
+.pfr-tabs { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); margin: var(--cds-gap-lg) 0 var(--cds-gap-md); border-bottom: 1px solid var(--color-border-line); }
+.pfr-tab { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-sm); cursor: pointer; margin-bottom: -1px; }
+.pfr-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); }
+.pfr-panel[hidden] { display: none; }
+.pfr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: var(--cds-gap-md); }
+.pfr-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; }
+.pfr-card h3 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0 0 var(--cds-gap-xs); }
+.pfr-note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); margin: 0 0 var(--cds-gap-md); }
+.pfr-section-title { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: var(--cds-gap-xl) 0 var(--cds-gap-sm); }
+.pfr-lead { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.3; margin: 0 0 var(--cds-gap-md); max-width: 52rem; }
+.pfr .num { font-variant-numeric: tabular-nums; font-weight: 600; }
+.pfr-findings { margin: 0; padding-left: 1.1rem; display: grid; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-body); line-height: 1.5; }
+.pfr-quote { margin: var(--cds-gap-md) 0 0; padding-left: var(--cds-pad-md); border-left: 2px solid var(--color-border-line); color: var(--color-fg-muted); font-size: var(--cds-font-size-body); font-style: italic; }
+.pfr-quote span { display: block; font-style: normal; font-size: var(--cds-font-size-caption); margin-top: var(--cds-gap-xs); }
+.pfr-recs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: var(--cds-gap-md); }
+.pfr-rec { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+.pfr-rec .k { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); text-transform: uppercase; letter-spacing: .04em; }
+.pfr-rec h4 { margin: 0; font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); }
+.pfr-rec p { margin: 0; font-size: var(--cds-font-size-body); line-height: 1.45; }
+.pfr-rec .kpi { margin-top: auto; padding-top: var(--cds-gap-xs); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.pfr-table-wrap { overflow-x: auto; }
+.pfr table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-body); font-variant-numeric: tabular-nums; }
+.pfr th { text-align: right; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.pfr td { text-align: right; padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.pfr th:first-child, .pfr td:first-child, .pfr th:nth-child(2), .pfr td:nth-child(2) { text-align: left; }
+.pfr-heat { position: relative; overflow-x: auto; }
+.pfr-heat-grid { display: grid; grid-template-columns: minmax(8rem, 1.3fr) repeat(4, minmax(4.2rem, 1fr)); gap: 3px; min-width: 30rem; font-size: var(--cds-font-size-caption); }
+.pfr-heat-grid .h { color: var(--color-fg-muted); text-align: center; padding: var(--cds-pad-xs) 0; font-weight: var(--cds-font-weight-medium); }
+.pfr-heat-grid .rl { display: flex; align-items: center; color: var(--color-fg); padding-right: var(--cds-pad-xs); }
+.pfr-heat-grid .c { position: relative; height: 2rem; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; overflow: hidden; }
+.pfr-heat-grid .c i { position: absolute; inset: 0; background: var(--cds-chart-status-critical); }
+.pfr-heat-grid .c b { position: relative; font-weight: 500; }
+.pfr-tip { position: absolute; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; z-index: 2; }
+.pfr-tip .t { color: var(--cds-text-secondary); }
+.pfr-bars { display: grid; gap: var(--cds-gap-xs); }
+.pfr-bar { display: grid; grid-template-columns: minmax(6.5rem, 9.5rem) 1fr 3.2rem; align-items: center; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); }
+.pfr-bar .l { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pfr-bar .track { height: 14px; background: var(--cds-chart-grid); border-radius: 7px; overflow: hidden; }
+.pfr-bar .fill { height: 100%; border-radius: 7px; background: var(--cds-chart-muted); }
+.pfr-bar.hl .fill { background: var(--cds-chart-status-critical); }
+.pfr-bar .v { text-align: right; font-variant-numeric: tabular-nums; }
+.pfr-chart { min-height: 6rem; }
+.pfr-chart svg text { fill: var(--color-fg-muted); font-size: 12px; font-family: var(--font-anthropic-sans); }
+.pfr-method ol, .pfr-method ul { margin: 0; padding-left: 1.2rem; display: grid; gap: var(--cds-gap-xs); line-height: 1.5; font-size: var(--cds-font-size-body); }
+.pfr-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: var(--cds-gap-md); }
+.pfr-stat .big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+.pfr-stat .lab { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.pfr-foot { margin-top: var(--cds-gap-xl); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+</style>
+
+<div class="pfr">
+  <header class="pfr-head">
+    <h1>Player Feedback Radar</h1>
+    <p><b class="num" data-source="facts" data-field="value" data-where="fact_id=n_reviews">—</b> App Store yorumu, 4 Türk stüdyosu, 4 ülke. Her oyunun en büyük ürün riski farklı: Royal Match'te reklam–oyun uyumsuzluğu, Toon Blast'ta erken gelen "para duvarı", Word Tiles GO'da maç ortası reklamlar, Color Block Jam'de zamanlayıcı.</p>
+  </header>
+
+  <nav class="pfr-tabs" role="tablist">
+    <button class="pfr-tab" role="tab" data-tab="genel">Genel bakış</button>
+    <button class="pfr-tab" role="tab" data-tab="royal-match">Royal Match</button>
+    <button class="pfr-tab" role="tab" data-tab="toon-blast">Toon Blast</button>
+    <button class="pfr-tab" role="tab" data-tab="word-tiles-go">Word Tiles GO</button>
+    <button class="pfr-tab" role="tab" data-tab="color-block-jam">Color Block Jam</button>
+    <button class="pfr-tab" role="tab" data-tab="yontem">Yöntem</button>
+  </nav>
+
+  <!-- GENEL BAKIŞ -->
+  <section class="pfr-panel" id="genel" role="tabpanel">
+    <div class="pfr-card" id="oyun-tablosu">
+      <h3>Oyunlar bir bakışta</h3>
+      <p class="pfr-note">Mağaza puanı: App Store'daki tüm yıldız değerlendirmeleri (4 ülke, puan sayısına göre ağırlıklı; <span data-source="facts" data-field="value" data-where="fact_id=store_date">—</span>). Yazılı yorum ort.: bu analizdeki yorumların ortalaması. Olumsuz, bırakma sinyali ve ağır şikâyet payları yazılı yorumlar içindedir; bırakma sinyali, oyunu sildiğini/bıraktığını açıkça söyleyenler.</p>
+      <div class="pfr-table-wrap">
+        <table data-source="games" data-row-key="game">
+          <thead><tr>
+            <th data-field="game">Oyun</th>
+            <th data-field="company">Stüdyo</th>
+            <th data-field="store_rating">Mağaza puanı</th>
+            <th data-field="avg_rating">Yazılı yorum ort.</th>
+            <th data-field="gap">Fark</th>
+            <th data-field="reviews">Yazılı yorum</th>
+            <th data-field="neg_pct">Olumsuz %</th>
+            <th data-field="churn_pct">Bırakma sinyali %</th>
+            <th data-field="severe_pct">Ağır şikâyet %</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <h2 class="pfr-section-title" id="sessiz-cogunluk">Sessiz çoğunluk, sesli azınlık</h2>
+    <div class="pfr-grid">
+      <div class="pfr-card">
+        <h3>Mağaza puanı ile yazılı yorumlar arasındaki fark</h3>
+        <p class="pfr-note">Her satırda sağdaki nokta mağaza puanı, soldaki yazılı yorumların ortalaması (yıldız). Aradaki çizgi ne kadar uzunsa, memnun oyuncu o kadar sessiz.</p>
+        <div class="pfr-chart" id="gap-chart" data-source="games"></div>
+      </div>
+      <div class="pfr-card">
+        <h3>Bu fark neden önemli?</h3>
+        <ul class="pfr-findings">
+          <li>Mağaza puanının büyük kısmı oyun içi "bizi puanlar mısın?" penceresinden gelen hızlı yıldızlardan oluşur; yazı yazan oyuncu ise çoğunlukla bir sorun yaşamıştır.</li>
+          <li>Bu yüzden yazılı yorumlar oyunun genel kalitesini değil, <b>oyuncunun neden memnun olmadığını</b> gösterir. Bu analiz o soruyu cevaplar.</li>
+          <li>En büyük fark Color Block Jam'de: mağazada <span class="num" data-source="games" data-field="store_rating" data-where="game=Color Block Jam">—</span>, yazılı yorumlarda <span class="num" data-source="games" data-field="avg_rating" data-where="game=Color Block Jam">—</span> yıldız. Memnun çoğunluğun yanında ciddi bir hayal kırıklığı cebi var.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 class="pfr-section-title" id="sikayet-haritasi">Şikâyet haritası</h2>
+    <div class="pfr-card">
+      <p class="pfr-note">Her hücre: o konudan şikâyet eden olumsuz yorumların, oyunun tüm yorumlarına oranı (%). Koyu hücre = o oyunun öne çıkan sorunu.</p>
+      <div class="pfr-heat" data-source="pain">
+        <div class="pfr-heat-grid" id="heat"></div>
+        <div class="pfr-tip" id="heat-tip" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROYAL MATCH -->
+  <section class="pfr-panel" id="royal-match" role="tabpanel" hidden>
+    <p class="pfr-lead">Royal Match yorumlarında "oyun reklamdaki gibi değil" şikâyetinin payı %<span class="num" data-source="pain" data-field="pct" data-where="game=Royal Match&amp;category=misleading_ads">—</span>. Diğer üç oyunda bu oran en fazla %<span class="num" data-source="facts" data-field="value" data-where="fact_id=others_ml_max">—</span>.</p>
+    <div class="pfr-grid">
+      <div class="pfr-card">
+        <h3>Bulgular</h3>
+        <ul class="pfr-findings">
+          <li>Son 30 günde bu pay %<span class="num" data-source="facts" data-field="value" data-where="fact_id=rm_ml_30">—</span>: sorun büyüyor.</li>
+          <li>Bu yorumların ortalama puanı <span class="num" data-source="facts" data-field="value" data-where="fact_id=rm_ml_rating">—</span> yıldız. Seviye belirtenlerde medyan seviye <span class="num" data-source="facts" data-field="value" data-where="fact_id=rm_ml_level">—</span> (n=<span data-source="facts" data-field="value" data-where="fact_id=rm_ml_level_n">—</span>): şikâyet eden, oyunun başındaki oyuncu. Çoğu reklamdaki "kralı kurtar" bulmacalarını arıyor.</li>
+          <li>Zorluk ve para şikâyetleri ise ilerlemiş oyunculardan geliyor: medyan seviye <span class="num" data-source="facts" data-field="value" data-where="fact_id=rm_diff_level">—</span> (n=<span data-source="facts" data-field="value" data-where="fact_id=rm_diff_level_n">—</span>).</li>
+        </ul>
+        <blockquote class="pfr-quote">"Still no sign of rescuing the king at level 14"<span>Birleşik Krallık, 1 yıldız</span></blockquote>
+      </div>
+      <div class="pfr-card">
+        <h3>Ülkeye göre "reklamdaki gibi değil" payı</h3>
+        <p class="pfr-note">Royal Match yorumları içinde, %</p>
+        <div class="pfr-bars pfr-chart" id="rm-country" data-source="rm_misleading_country"></div>
+        <p class="pfr-note" style="margin-top:var(--cds-gap-md)">Aynı oyun, çok farklı oranlar: pazara göre farklı kreatifler yayında olabilir.</p>
+      </div>
+      <div class="pfr-card">
+        <h3>Şikâyet profili</h3>
+        <p class="pfr-note">Olumsuz yorum içeren konular, tüm yorumlara oran (%)</p>
+        <div class="pfr-bars pfr-chart" id="prof-royal-match" data-source="pain"></div>
+      </div>
+    </div>
+    <h2 class="pfr-section-title">Öneriler</h2>
+    <div class="pfr-recs">
+      <div class="pfr-rec"><span class="k">Öneri 1</span><h4>Reklamı oyuna köprüle</h4><p>İlk ~50 seviyede reklamdaki "kralı kurtar" tipi bölümleri garanti et; reklamdan gelen oyuncuya erken göster.</p><span class="kpi">KPI: reklam kohortunun D1/D7 retention'ı, "reklamdaki gibi değil" yorum payı</span></div>
+      <div class="pfr-rec"><span class="k">Öneri 2</span><h4>Kreatif–pazar denetimi</h4><p>Birleşik Krallık'ta yayındaki kreatifleri Türkiye'dekilerle karşılaştır; şikâyet payını kreatif bazında izle.</p><span class="kpi">KPI: ülke bazında reklamla uyuşmazlık payı, install → D1</span></div>
+      <div class="pfr-rec"><span class="k">Öneri 3</span><h4>Geç oyun duvarını yumuşat</h4><p>Binli seviyelerde uzun süre takılan, ödeme yapmayan oyuncuya art arda kayıptan sonra küçük yardım (ek hamle) ver.</p><span class="kpi">KPI: 1000+ seviye churn'ü, ödeyen oyuncuya dönüşüm</span></div>
+    </div>
+  </section>
+
+  <!-- TOON BLAST -->
+  <section class="pfr-panel" id="toon-blast" role="tabpanel" hidden>
+    <p class="pfr-lead">Toon Blast'ta "para harcamadan geçilmiyor" hissi çok daha erken geliyor: zorluk şikâyetinde medyan seviye <span class="num" data-source="facts" data-field="value" data-where="fact_id=tb_diff_level">—</span>, Royal Match'te <span class="num" data-source="facts" data-field="value" data-where="fact_id=rm_diff_level">—</span>.</p>
+    <div class="pfr-grid">
+      <div class="pfr-card">
+        <h3>Bulgular</h3>
+        <ul class="pfr-findings">
+          <li>Seviye belirten zorluk yorumları: Toon Blast n=<span data-source="facts" data-field="value" data-where="fact_id=tb_diff_level_n">—</span>, Royal Match n=<span data-source="facts" data-field="value" data-where="fact_id=rm_diff_level_n">—</span>. Örneklem küçük; yön güçlü.</li>
+          <li>Olumsuz yorumlarda "yıllardır oynuyorum / eskiden severdim" diyen sadık oyuncuların payı %<span class="num" data-source="facts" data-field="value" data-where="fact_id=tb_veteran">—</span>; Royal Match'te %<span class="num" data-source="facts" data-field="value" data-where="fact_id=rm_veteran">—</span>. Uzun süreli oyuncu yorgunluğu belirgin.</li>
+          <li>Zorluk ve monetizasyon şikâyeti aynı yorumda: %<span class="num" data-source="facts" data-field="value" data-where="fact_id=tb_diffmon">—</span> (Royal Match %<span class="num" data-source="facts" data-field="value" data-where="fact_id=rm_diffmon">—</span>).</li>
+        </ul>
+        <blockquote class="pfr-quote">"230. seviyeye kadar sorunsuz… sonra para, para."<span>Almanya, 1 yıldız (çeviri)</span></blockquote>
+      </div>
+      <div class="pfr-card">
+        <h3>Zorluk şikâyetinde medyan seviye</h3>
+        <p class="pfr-note">Yorumda seviye numarası geçenler</p>
+        <div class="pfr-bars pfr-chart" id="tb-levels" data-source="facts"></div>
+      </div>
+      <div class="pfr-card">
+        <h3>Şikâyet profili</h3>
+        <p class="pfr-note">Olumsuz yorum içeren konular, tüm yorumlara oran (%)</p>
+        <div class="pfr-bars pfr-chart" id="prof-toon-blast" data-source="pain"></div>
+      </div>
+    </div>
+    <h2 class="pfr-section-title">Öneriler</h2>
+    <div class="pfr-recs">
+      <div class="pfr-rec"><span class="k">Öneri 1</span><h4>150–400 arası zorluk eğrisi</h4><p>Bu aralıkta seviye bazında başarısızlık ve hamle satın alma oranlarını incele; ani zorluk sıçramalarını düzle.</p><span class="kpi">KPI: seviye hunisi kaybı, D30 retention</span></div>
+      <div class="pfr-rec"><span class="k">Öneri 2</span><h4>Sadık oyuncu programı</h4><p>Yıllardır oynayanlara özel sadakat ödülleri ve tanınma; "eskiden daha cömertti" algısını kır.</p><span class="kpi">KPI: 1 yıl+ kohort retention'ı ve ARPPU</span></div>
+      <div class="pfr-rec"><span class="k">Öneri 3</span><h4>Ekonomi şeffaflığı</h4><p>Ödül/coin dengesini gözden geçir; ekonomi değişikliklerini oyun içinde açıkça duyur.</p><span class="kpi">KPI: coin kaynak/harcama oranı, olumsuz monetizasyon payı</span></div>
+    </div>
+  </section>
+
+  <!-- WORD TILES GO -->
+  <section class="pfr-panel" id="word-tiles-go" role="tabpanel" hidden>
+    <p class="pfr-lead">Word Tiles GO'da reklam şikâyetinin tüm yorumlara oranı %<span class="num" data-source="pain" data-field="pct" data-where="game=Word Tiles GO&amp;category=ads">—</span>: dört oyundaki en yüksek tekil sorun.</p>
+    <div class="pfr-grid">
+      <div class="pfr-card">
+        <h3>Bulgular</h3>
+        <ul class="pfr-findings">
+          <li>4–5 yıldız veren oyuncularda bile reklamdan söz edenlerin oranı %<span class="num" data-source="facts" data-field="value" data-where="fact_id=wtg_ads_45">—</span>: oyunu seven ama sabrı tükenen bir kitle.</li>
+          <li>Reklam şikâyetlerinde maç <b>ortasında</b> çıkan reklamların payı %<span class="num" data-source="facts" data-field="value" data-where="fact_id=wtg_mid">—</span>. Oyuncular maç arasındaki reklamı kabul ediyor.</li>
+          <li>Rakiplerin bot olup olmadığını sorgulayan yorumlar var; PvP şeffaflığı ikincil bir konu.</li>
+        </ul>
+        <blockquote class="pfr-quote">"after a match makes sense. 3+ ads in one match is frustrating."<span>ABD, 1 yıldız</span></blockquote>
+      </div>
+      <div class="pfr-card">
+        <h3>"Maç ortası reklam" anılma payı</h3>
+        <p class="pfr-note">Ana sürüme göre, tüm yorumlar içinde (%); çubuk yanında yorum sayısı</p>
+        <div class="pfr-bars pfr-chart" id="wtg-major" data-source="wtg_major"></div>
+        <p class="pfr-note" style="margin-top:var(--cds-gap-md)">Toplam 199 yorum, çoğu ABD'den; eğilim gösterir, kesin ölçüm değil.</p>
+      </div>
+      <div class="pfr-card">
+        <h3>Şikâyet profili</h3>
+        <p class="pfr-note">Olumsuz yorum içeren konular, tüm yorumlara oran (%)</p>
+        <div class="pfr-bars pfr-chart" id="prof-word-tiles-go" data-source="pain"></div>
+      </div>
+    </div>
+    <h2 class="pfr-section-title">Öneriler</h2>
+    <div class="pfr-recs">
+      <div class="pfr-rec"><span class="k">Öneri 1</span><h4>Reklamı maç arasına taşı</h4><p>Maç ortasındaki interstitial'ları kaldır, maç sonuna sınırla; kaybedilen geliri maç sonu sıklığıyla dengele.</p><span class="kpi">KPI: maç tamamlama oranı, oturum süresi, net ad ARPDAU</span></div>
+      <div class="pfr-rec"><span class="k">Öneri 2</span><h4>Seven oyuncuya ara seçenek</h4><p>Daha uygun fiyatlı "reklamsız" paket veya yalnızca ödüllü reklam modu; memnun ama sabrı tükenen oyuncuyu tut.</p><span class="kpi">KPI: reklamsız paket dönüşümü, 4–5 yıldızlı yorum payı</span></div>
+      <div class="pfr-rec"><span class="k">Öneri 3</span><h4>Rakip şeffaflığı</h4><p>Arkadaşla oynama veya rakip türünü gösteren etiket; "hep bota karşı oynuyorum" algısını azalt.</p><span class="kpi">KPI: sosyal özellik kullanımı, D7 retention</span></div>
+    </div>
+  </section>
+
+  <!-- COLOR BLOCK JAM -->
+  <section class="pfr-panel" id="color-block-jam" role="tabpanel" hidden>
+    <p class="pfr-lead">Color Block Jam'de olumsuz yorumlarda süre sınırı şikâyetinin payı %<span class="num" data-source="facts" data-field="value" data-where="fact_id=cbj_timer">—</span>; bu oyuncularda bırakma sinyali %<span class="num" data-source="facts" data-field="value" data-where="fact_id=cbj_timer_churn">—</span> (diğerlerinde %<span class="num" data-source="facts" data-field="value" data-where="fact_id=cbj_notimer_churn">—</span>).</p>
+    <div class="pfr-grid">
+      <div class="pfr-card">
+        <h3>Bulgular</h3>
+        <ul class="pfr-findings">
+          <li>Zamanlayıcı için şemada ayrı kategori yoktu: model bu yorumların büyük kısmını (%<span class="num" data-source="facts" data-field="value" data-where="fact_id=cbj_timer_mislabel">—</span>) bug ya da arayüz sorunu diye etiketledi. Anahtar kelime kontrolüyle yakalandı; bir sonraki sürümde ayrı kategori olacak.</li>
+          <li>Reklam şikâyetinin tüm yorumlara oranı %<span class="num" data-source="pain" data-field="pct" data-where="game=Color Block Jam&amp;category=ads">—</span>: her bölüm sonrası reklam, donan veya sesi kapanmayan reklamlar.</li>
+          <li>Olumsuz yorum payı çeyrekten çeyreğe artıyor (grafik).</li>
+        </ul>
+        <blockquote class="pfr-quote">"Game is fun, puzzles are great. But the timer is absolute garbage."<span>ABD, 4 yıldız</span></blockquote>
+      </div>
+      <div class="pfr-card">
+        <h3>Olumsuz yorum payı, çeyrek bazında</h3>
+        <p class="pfr-note">En az 30 yorumu olan çeyrekler (%). 2026 Ç4 yalnızca Ekim'in ilk günlerini kapsar.</p>
+        <div class="pfr-chart" id="cbj-quarter" data-source="cbj_quarter"></div>
+      </div>
+      <div class="pfr-card">
+        <h3>Şikâyet profili</h3>
+        <p class="pfr-note">Olumsuz yorum içeren konular, tüm yorumlara oran (%)</p>
+        <div class="pfr-bars pfr-chart" id="prof-color-block-jam" data-source="pain"></div>
+      </div>
+    </div>
+    <h2 class="pfr-section-title">Öneriler</h2>
+    <div class="pfr-recs">
+      <div class="pfr-rec"><span class="k">Öneri 1</span><h4>"Rahat mod" testi</h4><p>Zamanlayıcısız (ödülü düşük) bir mod veya zor seviyelerde süreyi uzatan ayar; süre satın alma gelirine etkisini A/B ile ölç.</p><span class="kpi">KPI: D7/D30 retention, süre uzatma IAP geliri</span></div>
+      <div class="pfr-rec"><span class="k">Öneri 2</span><h4>Reklam kalitesi</h4><p>Donan ve sesi kapanmayan reklamlar için reklam SDK hata takibi; kaybedilen seviyeden sonra reklam sıklığına sınır.</p><span class="kpi">KPI: reklam kaynaklı çökme oranı, oturum/gün</span></div>
+      <div class="pfr-rec"><span class="k">Öneri 3</span><h4>Sürüm bazlı yorum alarmı</h4><p>Her sürümde olumsuz yorum payı eşiği aşınca ekibe uyarı; bu proje bunun prototipi.</p><span class="kpi">KPI: sürüm başına olumsuz yorum payı</span></div>
+    </div>
+  </section>
+
+  <!-- YÖNTEM -->
+  <section class="pfr-panel pfr-method" id="yontem" role="tabpanel" hidden>
+    <div class="pfr-grid">
+      <div class="pfr-card">
+        <h3>Nasıl yapıldı</h3>
+        <ol>
+          <li>Apple'ın herkese açık yorum akışından 4 oyun × 4 ülke (ABD, Birleşik Krallık, Almanya, Türkiye) için en güncel yorumlar çekildi. Kullanıcı adları saklanmadı.</li>
+          <li>Her yorum, açık kaynak bir dil modeliyle (Qwen2.5-7B, Colab T4) 13 ürün kategorisine, duyguya, şiddete ve bırakma sinyaline göre etiketlendi. Çözülmüş örneklerle (few-shot) prompt dört sürümde iyileştirildi.</li>
+          <li>Model çıktılarının geçerli JSON olarak ayrıştırılma oranı: %<span data-source="facts" data-field="value" data-where="fact_id=parse_ok">—</span>.</li>
+          <li>Seviye numaraları, zamanlayıcı ve "yıllardır oynuyorum" gibi işaretler anahtar kelimelerle ayrıca çıkarıldı; model etiketleriyle karşılaştırıldı.</li>
+        </ol>
+      </div>
+      <div class="pfr-card">
+        <h3>Etiket doğruluğu</h3>
+        <p class="pfr-note"><span data-source="facts" data-field="value" data-where="fact_id=val_n">—</span> yorumluk dengeli örneklem elle kontrol edildi</p>
+        <div class="pfr-stats">
+          <div class="pfr-stat"><div class="big"><span data-source="facts" data-field="value" data-where="fact_id=val_sent">—</span>%</div><div class="lab">Duygu doğru</div></div>
+          <div class="pfr-stat"><div class="big"><span data-source="facts" data-field="value" data-where="fact_id=val_topic">—</span>%</div><div class="lab">Ana konu doğru</div></div>
+          <div class="pfr-stat"><div class="big"><span data-source="facts" data-field="value" data-where="fact_id=val_exact">—</span>%</div><div class="lab">Kategori seti birebir</div></div>
+        </div>
+        <p class="pfr-note" style="margin-top:var(--cds-gap-md)">Tipik hatalar: ödüllü reklamın genel reklam sayılması, 30 dakikalık can kilidinin zorluk sayılması, fazladan ikinci etiket.</p>
+      </div>
+      <div class="pfr-card">
+        <h3>Sınırlar</h3>
+        <ul>
+          <li>Yazılı yorumlar memnuniyetsiz oyunculara doğru kayar; sonuçlar mağaza puanını temsil etmez (Genel bakış'taki karşılaştırmaya bakın).</li>
+          <li>Apple akışı ülke başına son ~500 yorumu verir; oyunların zaman pencereleri farklıdır. Karşılaştırmalar bu yüzden "son 30 gün" ile de kontrol edildi.</li>
+          <li>Seviye medyanları az sayıda yoruma dayanır; n değerleri yanında verilmiştir.</li>
+          <li>Word Tiles GO için örneklem küçük (199 yorum).</li>
+        </ul>
+      </div>
+    </div>
+    <p class="pfr-foot">Bağımsız bir portföy çalışmasıdır; adı geçen stüdyolarla bağlantısı yoktur. Son yorum tarihi: <span data-source="facts" data-field="value" data-where="fact_id=date_max">—</span>.</p>
+  </section>
+</div>
+
+<script>
+(function () {
+  const GAMES = ['Royal Match', 'Toon Blast', 'Word Tiles GO', 'Color Block Jam'];
+  const SHORT = {'Royal Match': 'Royal Match', 'Toon Blast': 'Toon Blast', 'Word Tiles GO': 'Word Tiles', 'Color Block Jam': 'Color Block'};
+  const slug = g => g.toLowerCase().replace(/\s+/g, '-');
+  const n1 = v => { const x = +v; return Number.isInteger(x) ? d3.format(',')(x) : String(x); };
+
+  // --- sekmeler ---
+  const tabs = [...document.querySelectorAll('.pfr-tab')];
+  function show(id, push) {
+    tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === id)));
+    document.querySelectorAll('.pfr-panel').forEach(p => { p.hidden = p.id !== id; });
+    if (push) dash.setLink(id);
+  }
+  tabs.forEach(t => t.addEventListener('click', () => show(t.dataset.tab, true)));
+  const start = location.hash.slice(1);
+  const panel = start && document.getElementById(start) && document.getElementById(start).closest('.pfr-panel');
+  show(panel ? panel.id : 'genel', false);
+  if (start && document.getElementById(start)) document.getElementById(start).scrollIntoView();
+
+  function rowsOf(id) { const d = dash.data(id); return d.status === 'ok' ? d.data : null; }
+
+  // data-where içindeki tek hücreli işaretleri doldur
+  function fillMarks(id) {
+    const rows = rowsOf(id);
+    document.querySelectorAll(`[data-source="${id}"][data-where]`).forEach(el => {
+      if (!rows) { el.textContent = '—'; return; }
+      const conds = el.dataset.where.split('&').map(p => p.split('=').map(decodeURIComponent));
+      const r = rows.find(row => conds.every(([k, v]) => String(row[k]) === v));
+      const v = r ? r[el.dataset.field] : null;
+      el.textContent = v == null || v === '' ? '—' : (/^-?\d+(\.\d+)?$/.test(String(v)) ? n1(v) : String(v));
+    });
+  }
+
+  // yatay çubuklar
+  function bars(el, items, max, hl) {
+    el.innerHTML = '';
+    items.forEach(it => {
+      const row = document.createElement('div');
+      row.className = 'pfr-bar' + (hl && hl(it) ? ' hl' : '');
+      const l = document.createElement('span'); l.className = 'l'; l.textContent = it.label;
+      const tr = document.createElement('div'); tr.className = 'track';
+      const f = document.createElement('div'); f.className = 'fill';
+      f.style.width = Math.max(0, Math.min(100, it.value / max * 100)) + '%';
+      tr.appendChild(f);
+      const v = document.createElement('span'); v.className = 'v'; v.textContent = it.text;
+      row.append(l, tr, v);
+      el.appendChild(row);
+    });
+  }
+  function failed(el, id) {
+    const st = dash.data(id).status;
+    el.textContent = st === 'loading' ? '' : '—';
+  }
+
+  function drawTable() {
+    const rows = rowsOf('games');
+    const tb = document.querySelector('#oyun-tablosu tbody');
+    tb.innerHTML = '';
+    if (!rows) return;
+    const cols = ['game', 'company', 'store_rating', 'avg_rating', 'gap', 'reviews', 'neg_pct', 'churn_pct', 'severe_pct'];
+    GAMES.forEach(g => {
+      const r = rows.find(x => x.game === g); if (!r) return;
+      const tr = document.createElement('tr');
+      cols.forEach(c => { const td = document.createElement('td'); td.textContent = c === 'game' || c === 'company' ? r[c] : n1(r[c]); tr.appendChild(td); });
+      tb.appendChild(tr);
+    });
+  }
+
+  function drawGap() {
+    const el = document.getElementById('gap-chart');
+    const rows = rowsOf('games');
+    el.innerHTML = '';
+    if (!rows || rows.some(r => r.store_rating === '' || r.store_rating == null)) { failed(el, 'games'); return; }
+    const data = GAMES.map(g => rows.find(r => r.game === g)).filter(Boolean)
+      .map(r => ({g: r.game, w: +r.avg_rating, s: +r.store_rating, gap: +r.gap}));
+    const W = 560, rowH = 44, m = {t: 26, r: 46, b: 8, l: 108};
+    const H = m.t + data.length * rowH + m.b;
+    const x = d3.scaleLinear([1, 5], [m.l, W - m.r]);
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img');
+    [1, 2, 3, 4, 5].forEach(t => {
+      svg.append('line').attr('x1', x(t)).attr('x2', x(t)).attr('y1', m.t - 6).attr('y2', H - m.b).attr('stroke', 'var(--cds-chart-grid)');
+      svg.append('text').attr('x', x(t)).attr('y', m.t - 12).attr('text-anchor', 'middle').text(t + '★');
+    });
+    data.forEach((d, i) => {
+      const y = m.t + i * rowH + rowH / 2;
+      svg.append('text').attr('x', 0).attr('y', y + 4).style('fill', 'var(--color-fg)').text(SHORT[d.g]);
+      svg.append('line').attr('x1', x(d.w)).attr('x2', x(d.s)).attr('y1', y).attr('y2', y)
+        .attr('stroke', 'var(--cds-chart-muted)').attr('stroke-width', 4).attr('stroke-linecap', 'round');
+      svg.append('circle').attr('cx', x(d.w)).attr('cy', y).attr('r', 6).attr('fill', 'var(--cds-chart-status-critical)');
+      svg.append('circle').attr('cx', x(d.s)).attr('cy', y).attr('r', 6).attr('fill', 'var(--color-fg)');
+      svg.append('text').attr('x', x(d.w)).attr('y', y - 10).attr('text-anchor', 'middle').text(n1(d.w));
+      svg.append('text').attr('x', x(d.s)).attr('y', y - 10).attr('text-anchor', 'middle').text(n1(d.s));
+      svg.append('text').attr('x', W - m.r + 10).attr('y', y + 4).style('fill', 'var(--color-fg)').text('−' + n1(d.gap));
+    });
+  }
+
+  function drawHeat() {
+    const el = document.getElementById('heat');
+    const tip = document.getElementById('heat-tip');
+    const rows = rowsOf('pain');
+    el.innerHTML = '';
+    if (!rows) return;
+    const cats = [...new Map(rows.map(r => [r.category, r.category_tr])).entries()];
+    const tot = c => d3.sum(rows.filter(r => r.category === c), r => +r.pct);
+    cats.sort((a, b) => tot(b[0]) - tot(a[0]));
+    const max = d3.max(rows, r => +r.pct);
+    const add = (cls, text) => { const d = document.createElement('div'); d.className = cls; d.textContent = text; el.appendChild(d); return d; };
+    add('h', '');
+    GAMES.forEach(g => add('h', SHORT[g]));
+    cats.forEach(([c, ctr]) => {
+      add('rl', ctr);
+      GAMES.forEach(g => {
+        const r = rows.find(x => x.game === g && x.category === c);
+        const v = r ? +r.pct : 0;
+        const cell = document.createElement('div'); cell.className = 'c';
+        const i = document.createElement('i'); i.style.opacity = (0.06 + 0.84 * v / max).toFixed(3);
+        const b = document.createElement('b'); b.textContent = n1(v);
+        if (v / max > 0.55) b.style.color = 'var(--color-bg)';
+        cell.append(i, b);
+        cell.addEventListener('mouseenter', () => {
+          tip.innerHTML = '';
+          const t = document.createElement('div'); t.className = 't'; t.textContent = g;
+          const s = document.createElement('div'); s.textContent = `${ctr}: %${n1(v)}`;
+          tip.append(t, s); tip.hidden = false;
+          const box = el.parentElement.getBoundingClientRect(), cb = cell.getBoundingClientRect();
+          let x = cb.left - box.left + el.parentElement.scrollLeft, y = cb.bottom - box.top + 4;
+          x = Math.min(x, box.width - tip.offsetWidth - 4);
+          tip.style.left = Math.max(0, x) + 'px'; tip.style.top = y + 'px';
+        });
+        cell.addEventListener('mouseleave', () => { tip.hidden = true; });
+        el.appendChild(cell);
+      });
+    });
+  }
+
+  function drawProfiles() {
+    const rows = rowsOf('pain');
+    GAMES.forEach(g => {
+      const el = document.getElementById('prof-' + slug(g));
+      if (!rows) { failed(el, 'pain'); return; }
+      const items = rows.filter(r => r.game === g).map(r => ({label: r.category_tr, value: +r.pct, text: '%' + n1(r.pct)}))
+        .sort((a, b) => b.value - a.value).slice(0, 6);
+      const top = items[0] ? items[0].value : 1;
+      bars(el, items, top, it => it.value === top);
+    });
+  }
+
+  function drawRmCountry() {
+    const el = document.getElementById('rm-country');
+    const rows = rowsOf('rm_misleading_country');
+    if (!rows) { failed(el, 'rm_misleading_country'); return; }
+    const items = rows.map(r => ({label: r.country_tr, value: +r.pct, text: '%' + n1(r.pct)})).sort((a, b) => b.value - a.value);
+    bars(el, items, items[0].value, it => it.value === items[0].value);
+  }
+
+  function drawTbLevels() {
+    const el = document.getElementById('tb-levels');
+    const rows = rowsOf('facts');
+    if (!rows) { failed(el, 'facts'); return; }
+    const get = id => rows.find(r => r.fact_id === id);
+    const items = [
+      {label: 'Toon Blast', value: +get('tb_diff_level').value, text: n1(get('tb_diff_level').value)},
+      {label: 'Royal Match', value: +get('rm_diff_level').value, text: n1(get('rm_diff_level').value)},
+      {label: 'Color Block Jam', value: +get('cbj_diff_level').value, text: n1(get('cbj_diff_level').value)},
+    ];
+    bars(el, items, d3.max(items, d => d.value), it => it.label === 'Toon Blast');
+  }
+
+  function drawWtg() {
+    const el = document.getElementById('wtg-major');
+    const rows = rowsOf('wtg_major');
+    if (!rows) { failed(el, 'wtg_major'); return; }
+    const items = rows.map(r => ({label: `Sürüm ${r.major} (n=${r.reviews})`, value: +r.midgame_pct, text: '%' + n1(r.midgame_pct)}));
+    bars(el, items, d3.max(items, d => d.value), it => it === items[items.length - 1]);
+  }
+
+  function drawCbj() {
+    const el = document.getElementById('cbj-quarter');
+    const rows = rowsOf('cbj_quarter');
+    el.innerHTML = '';
+    if (!rows) { failed(el, 'cbj_quarter'); return; }
+    const W = 600, H = 240, m = {t: 24, r: 24, b: 30, l: 36};
+    const data = rows.map(r => ({q: r.quarter, v: +r.neg_pct}));
+    const x = d3.scalePoint(data.map(d => d.q), [m.l, W - m.r]).padding(0.3);
+    const y = d3.scaleLinear([50, 100], [H - m.b, m.t]);
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img');
+    svg.append('g').selectAll('line').data(y.ticks(5)).join('line')
+      .attr('x1', m.l).attr('x2', W - m.r).attr('y1', d => y(d)).attr('y2', d => y(d))
+      .attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').selectAll('text').data(y.ticks(5)).join('text')
+      .attr('x', m.l - 6).attr('y', d => y(d) + 4).attr('text-anchor', 'end').text(d => '%' + d);
+    svg.append('g').selectAll('text').data(data).join('text')
+      .attr('x', d => x(d.q)).attr('y', H - 8).attr('text-anchor', 'middle').text(d => d.q.replace('Q', ' Ç'));
+    svg.append('path').datum(data)
+      .attr('d', d3.line().x(d => x(d.q)).y(d => y(d.v)))
+      .attr('fill', 'none').attr('stroke', 'var(--cds-chart-status-critical)').attr('stroke-width', 2)
+      .attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+    svg.append('g').selectAll('circle').data(data).join('circle')
+      .attr('cx', d => x(d.q)).attr('cy', d => y(d.v)).attr('r', 3.5).attr('fill', 'var(--cds-chart-status-critical)');
+    svg.append('g').selectAll('text').data(data).join('text')
+      .attr('x', d => x(d.q)).attr('y', d => y(d.v) - 9).attr('text-anchor', 'middle')
+      .style('fill', 'var(--color-fg)').text(d => n1(d.v));
+  }
+
+  dash.onData(() => {
+    ['facts', 'pain', 'games', 'rm_misleading_country', 'wtg_major', 'cbj_quarter'].forEach(fillMarks);
+    drawTable();
+    drawGap();
+    drawHeat();
+    drawProfiles();
+    drawRmCountry();
+    drawTbLevels();
+    drawWtg();
+    drawCbj();
+  });
+})();
+</script>
